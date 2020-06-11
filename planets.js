@@ -1,6 +1,8 @@
 const planetsIds = {
+    Sun : 10,
     Mercury: 199,
     Venus: 299,
+    Moon : 301,
     Mars: 499,
     Jupiter: 599,
     Saturn: 699,

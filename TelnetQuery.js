@@ -9,9 +9,9 @@ const telnet = {
     HOST: 'horizons.jpl.nasa.gov',
     KEYWORDS: {
         READY: 'Horizons>',
-        START_STRING: 'Working ...',
+        START_STRING: '$$SOE',
         SEARCH_STRING: 'GlxLon',
-        END_STRING: 'Column meaning'
+        END_STRING: '$$EOE'
     }
 }
 
@@ -43,8 +43,25 @@ class TelnetQuery {
                 this.startingDate,
                 this.endingDate,
                 '10m',
-                'y',
-                '33, 1 , 4'
+                'n',
+                '33, 1 , 4',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Y'
             ];
         }
     }
@@ -61,7 +78,8 @@ class TelnetQuery {
 
         this.socket.on('close', () => {
             console.log('### CLOSED TELNET CONNECTION ###');
-            this.respondToUser(this.getResponse(), 200);
+            
+            this.respondToUser(this.resultsFilter(), 200);
         })
 
     }
@@ -74,11 +92,11 @@ class TelnetQuery {
             return false;
         }
         else {
-            if(!userLocation.longitude && !userLocation.latitude){
+            if (!userLocation.longitude && !userLocation.latitude) {
                 return false;
             }
 
-            if(!userLocation.altitude){
+            if (!userLocation.altitude) {
                 userLocation.altitude = 0;
             }
             return true;
@@ -112,11 +130,29 @@ class TelnetQuery {
     /**
      * Get response by cutting only needed strings to reduce data trafic.
      */
-    getResponse = () => {
-        let firstLineWanted = this.response.lastIndexOf(telnet.KEYWORDS.START_STRING);
+    resultsFilter = () => {
+        //First and last line needed
+        let firstLineWanted = this.response.lastIndexOf(telnet.KEYWORDS.START_STRING) + telnet.KEYWORDS.START_STRING.length;
         let lastLineWanted = this.response.lastIndexOf(telnet.KEYWORDS.END_STRING);
 
-        return this.response.substring(firstLineWanted, lastLineWanted);
+        //Cut the text response with first and last line wanted
+        this.response = this.response.substring(firstLineWanted, lastLineWanted);
+
+        return this.resultsFinalFormat();
+    }
+
+    //Convert strings text to final format response.
+    resultsFinalFormat = () =>{
+
+        let objectProperties = ["date", "glxLon", "glxLat", "rightAscension", "declination", "Azimuth", "Elevation"];
+        let finalResultObject = {};
+
+        let stringToArr = this.response.split(',')
+            .map(data => data.replace(/(?:\\[rn]|[\r\n]|[*]|[ ]+)+/g, ""))
+            .filter(data => data.length)
+            .map((data, index) => finalResultObject[objectProperties[index]] = data);
+
+        return finalResultObject;
     }
 
     /**
