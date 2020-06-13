@@ -14,8 +14,8 @@ const monthsName = [
 ]
 
 class SimpleDate {
-    constructor(){
-        this.date = new Date();
+    constructor(date){
+        this.date = date ? new Date(date) : new Date();
     }
 
     /**
@@ -24,11 +24,11 @@ class SimpleDate {
      * Returned simple ISO format -> 2020-May-2 17:10
      */
     readableIso = () =>{
-        let year = this.date.getFullYear();
-        let month = this.getMonthAbbreviaton(this.date.getMonth());
-        let date = this.date.getDate();
-        let hours = this.date.getHours();
-        let minutes = this.date.getMinutes();
+        let year = this.date.getUTCFullYear();
+        let month = this.getMonthAbbreviaton(this.date.getUTCMonth());
+        let date = this.date.getUTCDate();
+        let hours = this.date.getUTCHours();
+        let minutes = this.date.getUTCMinutes();
 
         return `${year}-${month}-${date} ${hours}:${minutes}`;
     }

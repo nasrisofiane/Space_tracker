@@ -16,7 +16,7 @@ const telnet = {
 }
 
 class TelnetQuery {
-    constructor(req, res, planetId, userLocation) {
+    constructor(req, res, planetId, userLocation, date) {
 
         this.req = req;
         this.res = res;
@@ -31,15 +31,15 @@ class TelnetQuery {
             this.initializeEvents();
             this.connectToTelnet();
             this.stepsCounter = 0;
-            this.startingDate = new SimpleDate().readableIso();
-            this.endingDate = new SimpleDate().appendToDate({ minutes: 1 });
+            this.startingDate = new SimpleDate(date).readableIso();
+            this.endingDate = new SimpleDate(date).appendToDate({ minutes: 1 });
             this.commands = [
                 planetId,
                 'E',
                 'o',
                 `c@399`,
                 'g',
-                `${userLocation.longitude}, ${userLocation.latitude}, ${userLocation.altitude}`,
+                `${userLocation.longitude}, ${userLocation.latitude}, 0`,
                 this.startingDate,
                 this.endingDate,
                 '10m',
@@ -99,6 +99,9 @@ class TelnetQuery {
             if (!userLocation.altitude) {
                 userLocation.altitude = 0;
             }
+
+            
+
             return true;
         }
     }
@@ -144,13 +147,23 @@ class TelnetQuery {
     //Convert strings text to final format response.
     resultsFinalFormat = () =>{
 
-        let objectProperties = ["date", "glxLon", "glxLat", "rightAscension", "declination", "Azimuth", "Elevation"];
-        let finalResultObject = {};
+        let finalResultObject = {
+            date : null,
+            glxLon : null,
+            glxLat : null,
+            rightAscension : null,
+            declination : null,
+            azimuth : null,
+            elevation : null
+        };
 
         let stringToArr = this.response.split(',')
             .map(data => data.replace(/(?:\\[rn]|[\r\n]|[*]|[ ]+)+/g, ""))
-            .filter(data => data.length)
-            .map((data, index) => finalResultObject[objectProperties[index]] = data);
+            .filter(data => data.length > 4);
+        
+        Object.keys(finalResultObject).map((prop, index) =>{
+            finalResultObject[prop] = stringToArr[index];
+        });
 
         return finalResultObject;
     }

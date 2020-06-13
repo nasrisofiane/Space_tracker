@@ -3,10 +3,11 @@ const planets = require('./planets');
 
 const getPlanetPosition = (req, res) =>{
     let planetName = req.params.name;
-    let userLocation = req.body;
+    let userLocation = req.body.location;
+    let date = req.body.date;
 
     if(planetName.length){
-        new TelnetQuery(req, res, planets.getPlanetId(planetName), userLocation);
+        new TelnetQuery(req, res, planets.getPlanetId(planetName), userLocation, date);
     }
     else{
         res.status(403);
