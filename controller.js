@@ -1,5 +1,5 @@
-const TelnetQuery = require('./TelnetQuery');
 const planets = require('./planets');
+const HorizonQuery = require('./HorizonQuery');
 
 const getPlanetPosition = (req, res) =>{
     let planetName = req.params.name;
@@ -7,7 +7,8 @@ const getPlanetPosition = (req, res) =>{
     let date = req.body.date;
 
     if(planetName.length){
-        new TelnetQuery(req, res, planets.getPlanetId(planetName), userLocation, date);
+        // new TelnetQuery(req, res, planets.getPlanetId(planetName), userLocation, date);
+        HorizonQuery.getPlanetDatas(req, res, planets.getPlanetId(planetName), userLocation, date);
     }
     else{
         res.status(403);
