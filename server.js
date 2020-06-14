@@ -5,9 +5,9 @@ const app = express();
 const headers = require('./headers');
 const router = require('./routes');
 
+app.use((req, res, next) => headers.allowOrigins('*', req, res, next));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use((req, res, next) => headers.allowOrigins('*', req, res, next));
 app.use(router);
 
 app.listen(port, () => {
