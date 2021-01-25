@@ -7,6 +7,6 @@ A Rest API that retrieve planets datas from NASA API to serve the mobile applica
 Below a list of technologies used to complete this project :
 
  - NodeJS
-	 - Express
+	- Express
 	 
  - Nasa API
